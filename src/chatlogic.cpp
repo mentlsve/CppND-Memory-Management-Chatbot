@@ -11,7 +11,6 @@
 #include "chatbot.h"
 #include "chatlogic.h"
 
-
 ChatLogic::ChatLogic()
 {
     //// STUDENT CODE
@@ -33,6 +32,7 @@ ChatLogic::~ChatLogic()
     ////
 
     // delete chatbot instance
+    std::cout << "Going to delete chatbot " << _chatBot << std::endl;
     delete _chatBot;
 
     // delete all nodes
@@ -218,7 +218,7 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
     // add chatbot to graph root node
     _chatBot->SetRootNode(rootNode);
     rootNode->MoveChatbotHere(_chatBot);
-    
+
     ////
     //// EOF STUDENT CODE
 }
