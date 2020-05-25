@@ -20,11 +20,12 @@ ChatBot::ChatBot()
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename)
 {
-    std::cout << "ChatBot Constructor " << this << std::endl;
+    std::cout << "ChatBot constructor " << this << std::endl;
 
     // invalidate data handles
     _chatLogic = nullptr;
     _rootNode = nullptr;
+    _filename = filename;
 
     // load image into heap memory
     _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
@@ -32,7 +33,7 @@ ChatBot::ChatBot(std::string filename)
 
 ChatBot::~ChatBot()
 {
-    std::cout << "ChatBot Destructor " << this << std::endl;
+    std::cout << "ChatBot destructor " << this << std::endl;
 
     // deallocate heap memory
     if (_image != NULL) // Attention: wxWidgets used NULL and not nullptr
@@ -45,6 +46,50 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
+// copy constructor
+ChatBot::ChatBot(const ChatBot &other)
+{
+    std::cout << "ChatBot copy constructor " << this << std::endl;
+    _image = new wxBitmap(other._filename, wxBITMAP_TYPE_PNG);
+    _chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+}
+
+// copy assignment
+ChatBot &ChatBot::operator=(const ChatBot &other)
+{
+    std::cout << "ChatBot copy assignment " << this << std::endl;
+    _image = new wxBitmap(other._filename, wxBITMAP_TYPE_PNG);
+    _chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+    return *this;
+}
+
+// move constructor
+ChatBot::ChatBot(ChatBot &&other)
+{
+    std::cout << "ChatBot move constructor " << this << std::endl;
+    _image = other._image;
+    other._image = NULL;
+    _chatLogic = std::exchange(other._chatLogic, nullptr);
+    _rootNode = std::exchange(other._rootNode, nullptr);
+    _currentNode = std::exchange(other._currentNode, nullptr);
+}
+
+// move assignment
+ChatBot &ChatBot::operator=(ChatBot &&other)
+{
+    std::cout << "ChatBot move assignment " << this << std::endl;
+    _image = other._image;
+    other._image = NULL;
+    _chatLogic = std::exchange(other._chatLogic, nullptr);
+    _rootNode = std::exchange(other._rootNode, nullptr);
+    _currentNode = std::exchange(other._currentNode, nullptr);
+    return *this;
+}
+////
 ////
 //// EOF STUDENT CODE
 
