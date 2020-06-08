@@ -15,13 +15,13 @@ ChatBot::ChatBot()
     _image = nullptr;
     _chatLogic = nullptr;
     _rootNode = nullptr;
+
+    std::cout << "ChatBot " << this << " constructed, no memory allocated for image" << std::endl;
 }
 
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename)
 {
-    std::cout << "ChatBot constructor " << this << std::endl;
-
     // invalidate data handles
     _chatLogic = nullptr;
     _rootNode = nullptr;
@@ -29,17 +29,22 @@ ChatBot::ChatBot(std::string filename)
 
     // load image into heap memory
     _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
+
+    std::cout << "ChatBot " << this << " constructed, memory allocated for image, image handle " << _image << std::endl;
 }
 
 ChatBot::~ChatBot()
 {
-    std::cout << "ChatBot destructor " << this << std::endl;
-
     // deallocate heap memory
     if (_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
+        std::cout << "ChatBot " << this << " destructed, memory at " << _image << "will be released." << std::endl;
         _image = NULL;
         delete _image;
+    }
+    else
+    {
+        std::cout << "ChatBot " << this << " destructed, image handle is NULL -> no call to delete" << std::endl;
     }
 }
 
@@ -49,7 +54,7 @@ ChatBot::~ChatBot()
 // copy constructor
 ChatBot::ChatBot(const ChatBot &other)
 {
-    std::cout << "ChatBot copy constructor " << this << std::endl;
+    std::cout << "ChatBot copy constructor from " << &other << " to " << this << std::endl;
     _image = new wxBitmap(other._filename, wxBITMAP_TYPE_PNG);
     _chatLogic = other._chatLogic;
     _rootNode = other._rootNode;
@@ -59,7 +64,7 @@ ChatBot::ChatBot(const ChatBot &other)
 // copy assignment
 ChatBot &ChatBot::operator=(const ChatBot &other)
 {
-    std::cout << "ChatBot copy assignment " << this << std::endl;
+    std::cout << "ChatBot copy assignment from " << &other << " to " << this << std::endl;
     _image = new wxBitmap(other._filename, wxBITMAP_TYPE_PNG);
     _chatLogic = other._chatLogic;
     _rootNode = other._rootNode;
@@ -70,23 +75,27 @@ ChatBot &ChatBot::operator=(const ChatBot &other)
 // move constructor
 ChatBot::ChatBot(ChatBot &&other)
 {
-    std::cout << "ChatBot move constructor " << this << std::endl;
-    _image = other._image;
+    std::cout << "ChatBot move constructor from " << &other << " to " << this << std::endl;
+    _image = std::move(other._image);
     other._image = NULL;
     _chatLogic = std::exchange(other._chatLogic, nullptr);
     _rootNode = std::exchange(other._rootNode, nullptr);
     _currentNode = std::exchange(other._currentNode, nullptr);
+
+    _chatLogic->SetChatbotHandle(this);
 }
 
 // move assignment
 ChatBot &ChatBot::operator=(ChatBot &&other)
 {
-    std::cout << "ChatBot move assignment " << this << std::endl;
-    _image = other._image;
+    std::cout << "ChatBot move assignment from " << &other << " to " << this << std::endl;
+    _image = std::move(other._image);
     other._image = NULL;
     _chatLogic = std::exchange(other._chatLogic, nullptr);
     _rootNode = std::exchange(other._rootNode, nullptr);
     _currentNode = std::exchange(other._currentNode, nullptr);
+
+    _chatLogic->SetChatbotHandle(this);
     return *this;
 }
 ////
@@ -137,7 +146,6 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::mt19937 generator(int(std::time(0)));
     std::uniform_int_distribution<int> dis(0, answers.size() - 1);
     std::string answer = answers.at(dis(generator));
-
     // send selected node answer to user
     _chatLogic->SendMessageToUser(answer);
 }

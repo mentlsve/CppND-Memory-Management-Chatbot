@@ -3,6 +3,7 @@
 
 #include <wx/bitmap.h>
 #include <string>
+#include <iostream>
 
 class GraphNode; // forward declaration
 class ChatLogic; // forward declaration
@@ -40,7 +41,11 @@ public:
     // getters / setters
     void SetCurrentNode(GraphNode *node);
     void SetRootNode(GraphNode *rootNode) { _rootNode = rootNode; }
-    void SetChatLogicHandle(ChatLogic *chatLogic) { _chatLogic = chatLogic; }
+    void SetChatLogicHandle(ChatLogic *chatLogic)
+    {
+        std::cout << chatLogic << " (ChatLogic) set on " << this << " (ChatBot)" << std::endl;
+        _chatLogic = chatLogic;
+    }
     wxBitmap *GetImageHandle() { return _image; }
 
     // communication
